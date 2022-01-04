@@ -1,11 +1,11 @@
-import { is } from '../src'
-import { Constructor } from '../src/types'
+import { is } from '../src';
+import { Constructor } from '../src/types';
 
-const trimNewlines = (val: unknown) => String(val).replace(/\n/g, '')
+const trimNewlines = (val: unknown) => String(val).replace(/\n/g, '');
 
-interface InstanceOfPayload {
-  ctor: Constructor<unknown>
-  val: unknown
+interface IsTestPayload {
+  ctor: Constructor<unknown>;
+  val: unknown;
 }
 
 describe('helpers', () => {
@@ -69,14 +69,14 @@ describe('helpers', () => {
         { ctor: Object, val: () => {} },
         { ctor: Object, val: [0, 0] },
         { ctor: Object, val: new Map() },
-      ] as InstanceOfPayload[]
+      ] as IsTestPayload[];
 
       validPayloads.forEach(({ ctor, val }) =>
         it(`should match ${trimNewlines(val)} as instance of ${
           ctor.name
         }`, () => expect(is(ctor, val)).toBe(true))
-      )
-    })
+      );
+    });
 
     describe("when value isn't an instance of supplied constructor", () => {
       const invalidObjects = [
@@ -97,13 +97,23 @@ describe('helpers', () => {
         { ctor: Symbol, val: 0 },
         { ctor: WeakMap, val: new WeakSet() },
         { ctor: WeakSet, val: new WeakMap() },
-      ] as InstanceOfPayload[]
+      ] as IsTestPayload[];
 
       invalidObjects.forEach(({ ctor, val }) =>
         it(`should not match ${trimNewlines(val)} as instance of ${
           ctor.name
         }`, () => expect(is(ctor, val)).toBe(false))
-      )
-    })
-  })
-})
+      );
+    });
+
+    describe('when using the curried variant', () => {
+      it('should return a partially applied function', () => {
+        const isString = is(String);
+
+        expect(typeof isString).toBe('function');
+        expect(isString(String())).toBe(true);
+        expect(isString(false)).toBe(false);
+      });
+    });
+  });
+});

@@ -1,6 +1,6 @@
 import { Constructor } from './types'
 
-const compareInstance = <T>(ctor: Constructor<T>, val: unknown): val is T =>
+const checkInstance = <T>(ctor: Constructor<T>, val: unknown): val is T =>
   (val != null && (val as Object).constructor === ctor) || val instanceof ctor
 
 /** Check if value `x` is an instance of supplied constructor. */
@@ -15,8 +15,8 @@ export function is(...args: any[]) {
   const [ctor, val] = args
 
   if (args.length === 1) {
-    return (val: unknown) => compareInstance(ctor, val)
+    return (val: unknown) => checkInstance(ctor, val)
   }
 
-  return compareInstance(ctor, val)
+  return checkInstance(ctor, val)
 }
